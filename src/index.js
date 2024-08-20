@@ -1,6 +1,6 @@
-import { insertButton } from './insertButton';
-import { capture } from './capture';
-import { hotKey } from './hotKey';
+import { insertButton } from '@utils/insertButton';
+import { capture } from '@utils/capture';
+import { hotKey } from '@utils/hotKey';
 
 function main() {
     setTimeout(insertButton, 2000);

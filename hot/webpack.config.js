@@ -1,4 +1,3 @@
-const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
@@ -6,41 +5,65 @@ const CustomHotUpdateStrategy = require('webpack-custom-hot-update-strategy');
 const updateFetchEval = require('webpack-custom-hot-update-strategy/strategies/update/hotDownloadUpdateChunkFetchEval');
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
-const DEV = NODE_ENV === 'development';
 
-const { publicPath } = require('./base.config.js');
-const devServerConfig = require('./dev-server.config.js');
+const clientConfig = require('../client.config');
+const https = clientConfig.https === true ? true : false;
+const host = clientConfig.host ? clientConfig.host : 'localhost';
+const port = clientConfig.port ? clientConfig.port : 3000;
+const publicPath = `${https ? 'https' : 'http'}://${host}:${port}/`;
+const hot = clientConfig.hot === true ? true : false;
+const hotOnly = clientConfig.hotOnly === true ? true : false;
 
 config = {
     mode: NODE_ENV,
-    context: path.resolve(__dirname, 'src'),
+    context: path.resolve(__dirname, 'autoload-client-src'),
 
     entry: {
         index: './index'
     },
 
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: '[name].js',
+        path: path.resolve(__dirname, NODE_ENV === 'development' ? '' : '../'),
+        filename: 'Client.js',
         publicPath
     },
 
-    watch: DEV,
+    watch: NODE_ENV === 'development',
     watchOptions: {
         aggregateTimeout: 100
     },
 
-    devServer: devServerConfig,
+    devServer: {
+        contentBase: path.join(__dirname),
+        port,
+        https,
+        hot: NODE_ENV === 'development' ? hot : false,
+        hotOnly: NODE_ENV === 'development' ? hotOnly : false,
 
-    // devtool: DEV ? 'eval-inline-source-map' : false,
-    devtool: DEV ? 'inline-source-map' : false,
+        writeToDisk: false,
+
+        clientLogLevel: 'warn',
+        disableHostCheck: true,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+            'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
+        },
+        overlay: {
+            warnings: true,
+            errors: true
+        },
+        index: '',
+        transportMode: {
+            client: require.resolve('./HotWebsocketClient'),
+            server: 'ws'
+        }
+    },
+
+    devtool: NODE_ENV === 'development' ? 'inline-source-map' : false,
     plugins: [
-        new webpack.DefinePlugin({
-            NODE_ENV: JSON.stringify(NODE_ENV)
-        }),
         new HtmlWebpackPlugin({
-            title: 'JSX Test',
-            template: './index.html'
+            template: path.resolve(__dirname, 'autoload-client-src/index.html')
         }),
         new CustomHotUpdateStrategy({
             update: updateFetchEval
@@ -50,15 +73,13 @@ config = {
     module: {
         rules: [
             {
-                test: /\.js$|\.jsx$|\.ts$|\.tsx$/,
+                test: /\.js$|\.jsx$/,
                 exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['@babel/preset-typescript', ['@babel/preset-env', { targets: 'defaults' }]],
+                        presets: ['@babel/preset-env'],
                         plugins: [
-                            '@babel/plugin-proposal-optional-chaining',
-                            '@babel/plugin-proposal-nullish-coalescing-operator',
                             '@babel/plugin-proposal-class-properties',
                             '@babel/plugin-syntax-jsx',
                             ['@babel/plugin-transform-react-jsx', { 'pragma': 'dom' }]
@@ -104,9 +125,9 @@ config = {
     },
 
     resolve: {
-        extensions: ['index.js', '.js', '.jsx', '.ts', '.tsx', '*'],
+        extensions: ['index.js', '.js', '*'],
         alias: {
-            '@utils': path.resolve(__dirname, './src/utils')
+            '@': path.resolve(__dirname, '../')
         }
     }
 };
