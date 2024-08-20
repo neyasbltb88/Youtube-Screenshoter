@@ -6,7 +6,8 @@ export const insertButton = () => {
 
     captureButton.setAttribute('class', 'ytp-button');
     captureButton.setAttribute('style', 'font-size: 1.6em; text-align: center;');
-    captureButton.innerHTML = '&#128247;';
+    const textnode = document.createTextNode('📷');
+    captureButton.appendChild(textnode);
 
     controls.insertAdjacentElement('afterbegin', captureButton);
     captureButton.addEventListener('click', capture);

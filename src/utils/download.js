@@ -4,7 +4,8 @@ export const createAnchor = (url, fileName) => {
     anchor.setAttribute('download', fileName);
     anchor.className = 'download-js';
     anchor.style.display = 'none';
-    anchor.innerHTML = 'downloading...';
+    const textnode = document.createTextNode('downloading...');
+    anchor.appendChild(textnode);
     anchor.addEventListener('click', (e) => e.stopPropagation(), { once: true });
 
     return anchor;
