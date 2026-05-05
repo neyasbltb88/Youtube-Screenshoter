@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         YT_ScreenShot
 // @namespace    @neyasbltb88
-// @version      1.0.0
-// @description  
-// @homepageURL
-// @source
-// @downloadURL
-// @updateURL
+// @version      1.1.0
+// @description  Кнопка сохранения скриншотов с видео. Хоткей CTRL+Q.
+// @homepageURL  https://github.com/neyasbltb88/Youtube-Screenshoter
+// @source       https://github.com/neyasbltb88/Youtube-Screenshoter.git
+// @downloadURL  https://github.com/neyasbltb88/Youtube-Screenshoter/tree/master/dist/index.user.js
+// @updateURL    https://github.com/neyasbltb88/Youtube-Screenshoter/tree/master/dist/index.user.js
 // @grant        unsafeWindow
 // @noframes
 // @unwrap

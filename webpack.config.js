@@ -15,10 +15,16 @@ class UserscriptPlugin {
             const indexJsPath = path.resolve(distPath, 'index.js');
             const userscriptPath = path.resolve(distPath, 'index.user.js');
 
+            // Read the static meta file
             const metaContent = fs.readFileSync(metaPath, 'utf8');
+            // Load package.json to obtain the current version
+            const pkgPath = path.resolve(__dirname, 'package.json');
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+            // Replace the @version line with the version from package.json
+            const versionedMeta = metaContent.replace(/^\/\/ @version\s+.*$/m, `// @version      ${pkg.version}`);
             const indexContent = fs.readFileSync(indexJsPath, 'utf8');
 
-            const userscriptContent = metaContent + '\n' + indexContent;
+            const userscriptContent = versionedMeta + '\n' + indexContent;
             fs.writeFileSync(userscriptPath, userscriptContent, 'utf8');
 
             console.log('Userscript generated: dist/index.user.js');
