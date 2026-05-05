@@ -6,7 +6,7 @@ export const insertButton = (containerSelector) => {
 
     const captureButton = document.createElement('div');
     captureButton.setAttribute('class', 'ytp-button');
-    captureButton.setAttribute('style', 'font-size: 1.6em; text-align: center;');
+    captureButton.setAttribute('style', 'font-size: 1.6em; line-height: 1.8em; text-align: center;');
     const textnode = document.createTextNode('📷');
     captureButton.appendChild(textnode);
 
