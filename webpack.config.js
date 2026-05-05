@@ -1,9 +1,30 @@
 const webpack = require('webpack');
 const path = require('path');
+const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const CustomHotUpdateStrategy = require('webpack-custom-hot-update-strategy');
 const updateFetchEval = require('webpack-custom-hot-update-strategy/strategies/update/hotDownloadUpdateChunkFetchEval');
+
+// Custom plugin to generate userscript file
+class UserscriptPlugin {
+    apply(compiler) {
+        compiler.hooks.done.tap('UserscriptPlugin', (stats) => {
+            const distPath = path.resolve(__dirname, 'dist');
+            const metaPath = path.resolve(__dirname, 'src/userscript.meta.txt');
+            const indexJsPath = path.resolve(distPath, 'index.js');
+            const userscriptPath = path.resolve(distPath, 'index.user.js');
+
+            const metaContent = fs.readFileSync(metaPath, 'utf8');
+            const indexContent = fs.readFileSync(indexJsPath, 'utf8');
+
+            const userscriptContent = metaContent + '\n' + indexContent;
+            fs.writeFileSync(userscriptPath, userscriptContent, 'utf8');
+
+            console.log('Userscript generated: dist/index.user.js');
+        });
+    }
+}
 
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const DEV = NODE_ENV === 'development';
@@ -44,7 +65,8 @@ config = {
         }),
         new CustomHotUpdateStrategy({
             update: updateFetchEval
-        })
+        }),
+        new UserscriptPlugin()
     ],
 
     module: {
